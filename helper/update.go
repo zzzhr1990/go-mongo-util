@@ -62,6 +62,9 @@ func UpdateMany(ctx context.Context, collection *mongo.Collection, filter interf
 				}
 			}
 
+			if fieldName == "_id" {
+				forceIgnore = true
+			}
 			if !forceIgnore && (forceUpdate || !fVal.IsZero()) {
 				proj = append(proj, bson.E{Key: fieldName, Value: fVal.Interface()})
 				change++
