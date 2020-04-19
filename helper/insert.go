@@ -2,6 +2,7 @@ package helper
 
 import (
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,6 +13,9 @@ import (
 func Insert(ctx context.Context, collection *mongo.Collection, filter interface{}, data interface{}) error {
 	if data == nil {
 		return nil
+	}
+	if collection == nil {
+		return errors.New("connection not available")
 	}
 	bs := bson.D{bson.E{Key: "$set", Value: data}}
 	_, err := collection.UpdateOne(ctx, filter, bs, options.Update().SetUpsert(true))

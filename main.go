@@ -10,12 +10,12 @@ import (
 )
 
 func main() {
-	test := model.TestModel{
+	test := &model.TestModel{
 		Identity:  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 		TestParam: "BBBB",
 	}
 	fmt.Println("Hello")
-	_, err := helper.UpdateMany(context.Background(), nil, test, bson.D{}, map[string]bool{"test_param_2": false, "empty_string": true})
+	_, err := helper.UpdateMany(context.Background(), nil, bson.D{}, test, map[string]bool{"test_param_2": false, "empty_string": true})
 	if err != nil {
 		fmt.Printf("Error: %v \n", err)
 	}

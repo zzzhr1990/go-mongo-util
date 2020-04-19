@@ -16,16 +16,26 @@ import (
 // UpdateMany Update it auto
 func UpdateMany(ctx context.Context, collection *mongo.Collection, filter interface{}, data interface{}, controlMap map[string]bool, opts ...*options.UpdateOptions) (int64, error) {
 	if data == nil {
-		return 0, nil
+		return 0, errors.New("data is nil")
 	}
 	reflectType := reflect.ValueOf(data).Type()
+	val := reflect.ValueOf(data)
+	needElm := false
 	for reflectType.Kind() == reflect.Slice || reflectType.Kind() == reflect.Ptr {
 		reflectType = reflectType.Elem()
+		needElm = true
+
 	}
-	val := reflect.ValueOf(data)
+
 	// Scope value need to be a struct
 	if reflectType.Kind() != reflect.Struct {
 		return 0, errors.New("cannot support this input struct")
+	}
+	if needElm {
+		if val.Kind() != reflect.Ptr && val.Kind() != reflect.Interface {
+			return 0, errors.New("cannot support this input struct")
+		}
+		val = val.Elem()
 	}
 	proj := bson.D{}
 	change := 0
@@ -63,6 +73,9 @@ func UpdateMany(ctx context.Context, collection *mongo.Collection, filter interf
 		return 0, nil
 	}
 	updlang := bson.D{bson.E{Key: "$set", Value: proj}}
+	if collection == nil {
+		return 0, errors.New("connection not available")
+	}
 	res, err := collection.UpdateMany(ctx, filter, bson.D{bson.E{Key: "$set", Value: updlang}}, opts...)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
