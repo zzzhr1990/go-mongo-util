@@ -33,3 +33,8 @@ func Insert(ctx context.Context, collection *mongo.Collection, filter interface{
 func Create(ctx context.Context, collection *mongo.Collection, filter interface{}, data interface{}) error {
 	return Insert(ctx, collection, filter, data)
 }
+
+// CreateWithID create with id req
+func CreateWithID(ctx context.Context, collection *mongo.Collection, id interface{}, data interface{}) error {
+	return Insert(ctx, collection, bson.D{{Key: "_id", Value: id}}, data)
+}
