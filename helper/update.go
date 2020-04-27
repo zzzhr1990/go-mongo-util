@@ -13,6 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// UpdateWithID Update it auto
+func UpdateWithID(ctx context.Context, collection *mongo.Collection, identity interface{}, data interface{}, controlMap map[string]bool, opts ...*options.UpdateOptions) (int64, error) {
+	return UpdateMany(ctx, collection, bson.D{{Key: "_id", Value: identity}}, data, controlMap, opts...)
+}
+
 // UpdateMany Update it auto
 func UpdateMany(ctx context.Context, collection *mongo.Collection, filter interface{}, data interface{}, controlMap map[string]bool, opts ...*options.UpdateOptions) (int64, error) {
 	if data == nil {
@@ -79,7 +84,7 @@ func UpdateMany(ctx context.Context, collection *mongo.Collection, filter interf
 	if collection == nil {
 		return 0, errors.New("connection not available")
 	}
-	res, err := collection.UpdateMany(ctx, filter, bson.D{bson.E{Key: "$set", Value: updlang}}, opts...)
+	res, err := collection.UpdateMany(ctx, filter, updlang, opts...)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return 0, nil
