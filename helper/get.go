@@ -17,7 +17,7 @@ func Get(ctx context.Context, collection *mongo.Collection, filter interface{}, 
 		return errors.New("connection not available")
 	}
 	cur := collection.FindOne(ctx, filter, ops...)
-	err := cur.Decode(filter)
+	err := cur.Decode(result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil
